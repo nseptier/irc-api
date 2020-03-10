@@ -8,7 +8,7 @@ interface User extends Document {
 
 const schema = new Schema(
   {
-    name: { required: true, type: String },
+    name: { required: true, type: String, unique: true },
     password: { required: true, type: String },
   },
   { timestamps: true },
