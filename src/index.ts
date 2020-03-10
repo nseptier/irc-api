@@ -14,6 +14,7 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 const app = express();
 
 mongoose.connect( `${process.env.DATABASE}`, {
+  useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
