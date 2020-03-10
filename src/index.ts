@@ -21,7 +21,10 @@ mongoose.connect( `${process.env.DATABASE}`, {
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use('/graphql', graphqlHTTP({ schema, graphiql: true }));
+app.use('/graphql', graphqlHTTP({
+  schema,
+  graphiql: process.env.NODE_ENV === 'development',
+}));
 
 const server = app.listen(PORT, () => {
   console.info(`Listening on port ${PORT}`);
