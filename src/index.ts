@@ -1,37 +1,17 @@
-import * as dotenv from 'dotenv-flow';
-import cors from 'cors';
-import express from 'express';
-import graphqlHTTP from 'express-graphql';
-import helmet from 'helmet';
 import mongoose from 'mongoose';
-import { schema } from 'modules/users/schema';
+import resolvers from 'modules/resolvers';
+import typeDefs from './modules/type-defs';
+import { ApolloServer, gql } from 'apollo-server';
 
-dotenv.config();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
-if (!process.env.PORT) process.exit(1);
+server.listen(4000);
 
-const PORT: number = parseInt(process.env.PORT as string, 10);
-const app = express();
-
-mongoose.connect( `${process.env.DATABASE}`, {
+mongoose.connect('mongodb://127.0.0.1:27017/irc', {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use('/graphql', graphqlHTTP({
-  schema,
-  graphiql: process.env.NODE_ENV === 'development',
-}));
-
-const server = app.listen(PORT, () => {
-  console.info(`Listening on port ${PORT}`);
-});
-
-if (module.hot) {
-  module.hot.accept();
-  module.hot.dispose(() => server.close());
-}
