@@ -5,11 +5,17 @@ export default `
     password: String!
   }
 
+  type LoginResponse {
+    token: String
+    user: User
+  }
+
   extend type Query {
-    user(name: String!): User
+    currentUser: User
   }
 
   extend type Mutation {
-    addUser(name: String!, password: String!): User
+    register(name: String!, password: String!): User
+    logIn(name: String!, password: String!): LoginResponse
   }
 `;
