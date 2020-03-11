@@ -1,4 +1,4 @@
-import User from 'modules/users/type-def';
+import User from 'modules/users/type-defs';
 
 const Query = `
   type Query {

@@ -2,10 +2,9 @@ export default `
   type User {
     id: ID!
     name: String!
-    password: String!
   }
 
-  type LoginResponse {
+  type ConnectResponse {
     token: String
     user: User
   }
@@ -15,7 +14,6 @@ export default `
   }
 
   extend type Mutation {
-    register(name: String!, password: String!): User
-    logIn(name: String!, password: String!): LoginResponse
+    connect(name: String!): ConnectResponse
   }
 `;
