@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import resolvers from 'modules/resolvers';
 import typeDefs from './modules/type-defs';
-import { ApolloServer, gql } from 'apollo-server';
+import { ApolloServer } from 'apollo-server';
 
 const getUser = (token: string) => {
   if (!token) return null;
@@ -16,12 +16,16 @@ const getUser = (token: string) => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.split(' ')[1];
-    const user = getUser(token);
+  context: ({ req, res }) => {
+    const authHeader = req.headers.cookie || '';
+    const token = authHeader.split('=')[1];
+    const currentUser = getUser(token);
 
-    return { user };
+    return { currentUser, req, res };
+  },
+  cors: {
+    credentials: true,
+    origin: 'http://localhost:3000',
   },
 });
 

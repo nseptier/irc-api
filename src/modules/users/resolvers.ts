@@ -3,14 +3,18 @@ import User, { UserInterface } from './model';
 
 export default {
   Query: {
-    currentUser: (root: any, args: any, { user }: { user: UserInterface } ) => {
-      if (!user) throw new Error('Not authenticated');
-      return user;
+    currentUser: (
+      root: any,
+      args: any,
+      { currentUser }: { currentUser: UserInterface }
+    ) => {
+      if (!currentUser) throw new Error('Not authenticated');
+      return currentUser;
     }
   },
 
   Mutation: {
-    connect: async (root: any, { name }: UserInterface) => {
+    connect: async (root: any, { name }: UserInterface, { res }: any) => {
       const user: UserInterface = await User.findOne({ name })
         || await User.create({ name });
       const token = jwt.sign(
@@ -20,11 +24,12 @@ export default {
         },
         'some_secret_key',
         {
-          expiresIn: '5m', // token will expire after 5 minutes
+          expiresIn: '1h', // token will expire after 1 hour
         },
       );
 
-      return { token, user };
+      res.cookie('jwt', token, { maxAge: 1000 * 60 * 60, httpOnly: true });
+      return { user };
     },
   },
 };
