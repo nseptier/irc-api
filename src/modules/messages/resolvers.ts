@@ -9,16 +9,32 @@ export const getAuthor = async (message: any) => (
 export const addMessage = async (
   root: any,
   { body }: MessageInterface,
-  { currentUser }: { currentUser: UserInterface }
+  { currentUser }: { currentUser: UserInterface },
 ) => {
+  if (!currentUser) throw new Error('Not authenticated');
+
   const message = await Message.create({ authorId: currentUser.id, body });
 
   return { message };
 };
 
+export const getMessages = async (
+  root: any,
+  args: any,
+  { currentUser }: { currentUser: UserInterface },
+) => {
+  const messages = await Message.find({});
+console.info(messages);
+  return messages;
+};
+
 export default {
   Message: {
     author: getAuthor,
+  },
+
+  Query: {
+    messages: getMessages,
   },
 
   Mutation: {

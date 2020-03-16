@@ -6,12 +6,12 @@ export default `
     id: ID!
   }
 
-  type AddMessageResponse {
-    message: Message
+  extend type Query {
+    messages: [Message]
   }
 
-  extend type Query {
-    author: User
+  type AddMessageResponse {
+    message: Message
   }
 
   extend type Mutation {
