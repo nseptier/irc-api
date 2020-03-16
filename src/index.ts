@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import resolvers from 'modules/resolvers';
-import typeDefs from './modules/type-defs';
+import typeDefs from 'modules/type-defs';
 import { ApolloServer } from 'apollo-server';
 
 const getUser = (token: string) => {

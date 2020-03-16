@@ -1,5 +1,8 @@
-import userResolvers from './users/resolvers';
+import messageResolvers from 'modules/messages/resolvers';
+import userResolvers from 'modules/users/resolvers';
+import merge from 'lodash.merge';
 
-export default {
-  ...userResolvers
-}
+export default merge(
+  messageResolvers,
+  userResolvers,
+);

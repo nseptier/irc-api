@@ -1,4 +1,5 @@
-import User from 'modules/users/type-defs';
+import Messages from 'modules/messages/type-defs';
+import Users from 'modules/users/type-defs';
 
 const Query = `
   type Query {
@@ -10,4 +11,8 @@ const Query = `
   }
 `;
 
-export default [Query, User];
+export default [
+  Query,
+  Messages,
+  Users,
+];
