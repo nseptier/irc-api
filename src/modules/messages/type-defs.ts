@@ -17,4 +17,8 @@ export default `
   extend type Mutation {
     addMessage(body: String!): AddMessageResponse
   }
+
+  extend type Subscription {
+    messageAdded: AddMessageResponse
+  }
 `;

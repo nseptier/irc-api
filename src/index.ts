@@ -1,3 +1,4 @@
+import { createServer } from 'http';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import resolvers from 'modules/resolvers';
@@ -6,6 +7,8 @@ import { ApolloServer } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import cors from 'cors';
+
+const PORT = 4000;
 
 const getUser = (token: string) => {
   if (!token) return null;
@@ -17,25 +20,31 @@ const getUser = (token: string) => {
 };
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req, res }) => {
+  context: ({ connection, req, res }) => {
+    if (connection) return connection.context;
+
     const token = req.cookies.jwt;
     const currentUser = getUser(token);
 
     return { currentUser, req, res };
   },
+  resolvers,
+  typeDefs,
 });
 
 const app = express();
+const httpServer = createServer(app);
 
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(cookieParser());
 
-// @ts-ignore
 server.applyMiddleware({ app, cors: false });
+server.installSubscriptionHandlers(httpServer);
 
-app.listen(4000);
+httpServer.listen(PORT, () => {
+  console.log(`Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+  console.log(`Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`);
+});
 
 mongoose.connect('mongodb://127.0.0.1:27017/irc', {
   useCreateIndex: true,

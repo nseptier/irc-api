@@ -9,6 +9,10 @@ const Query = `
   type Mutation {
     none: String
   }
+
+  type Subscription {
+    none: String
+  }
 `;
 
 export default [
