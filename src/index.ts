@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import resolvers from 'modules/resolvers';
 import typeDefs from 'modules/type-defs';
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-express';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import cors from 'cors';
 
 const getUser = (token: string) => {
   if (!token) return null;
@@ -17,19 +20,22 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req, res }) => {
-    const authHeader = req.headers.cookie || '';
-    const token = authHeader.split('=')[1];
+    const token = req.cookies.jwt;
     const currentUser = getUser(token);
 
     return { currentUser, req, res };
   },
-  cors: {
-    credentials: true,
-    origin: 'http://localhost:3000',
-  },
 });
 
-server.listen(4000);
+const app = express();
+
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cookieParser());
+
+// @ts-ignore
+server.applyMiddleware({ app, cors: false });
+
+app.listen(4000);
 
 mongoose.connect('mongodb://127.0.0.1:27017/irc', {
   useCreateIndex: true,
