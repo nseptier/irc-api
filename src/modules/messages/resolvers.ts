@@ -1,11 +1,11 @@
 import Message, { MessageInterface } from './model';
 import User, { UserInterface } from 'modules/users/model';
-import { getUser } from 'modules/users/resolvers';
+import { getUser, USER_CONNECTED } from 'modules/users/resolvers';
 import { PubSub } from 'apollo-server-express';
 
 const pubsub = new PubSub();
 
-const MESSAGE_ADDED = 'MESSAGE_ADDED';
+export const MESSAGE_ADDED = 'MESSAGE_ADDED';
 
 export const getAuthor = async (message: any) => (
   await getUser(null, { id: message.authorId })
@@ -50,7 +50,6 @@ export default {
   Subscription: {
     messageAdded: {
       subscribe: () => pubsub.asyncIterator([MESSAGE_ADDED]),
-    }
+    },
   },
 };
-

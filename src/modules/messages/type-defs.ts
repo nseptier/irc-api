@@ -1,9 +1,16 @@
 export default `
+  enum Event {
+    USER_CONNECTED
+    USER_DISCONNECTED
+  }
+
   type Message {
     author: User
-    body: String!
+    body: String
     createdAt: String!
+    event: Event
     id: ID!
+    system: Boolean
   }
 
   extend type Query {
@@ -18,7 +25,13 @@ export default `
     addMessage(body: String!): AddMessageResponse
   }
 
+  type UserConnectedResponse {
+    message: Message
+    user: User
+  }
+
   extend type Subscription {
     messageAdded: AddMessageResponse
+    userConnected: UserConnectedResponse
   }
 `;

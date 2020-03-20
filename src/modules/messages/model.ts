@@ -11,10 +11,9 @@ const MessageSchema = new Schema(
       required: true,
       type: String,
     },
-    body: {
-      required: true,
-      type: String,
-    },
+    body: String,
+    event: String,
+    system: Boolean,
   },
   { timestamps: true },
 );
