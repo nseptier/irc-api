@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import Message from 'modules/messages/model';
 import User, { UserInterface } from './model';
+import { addUserConnectedLog } from 'modules/messages/resolvers';
 import { PubSub } from 'apollo-server-express';
 
 const pubsub = new PubSub();
@@ -14,20 +15,21 @@ export const connect = async (
 ) => {
   const user: UserInterface = await User.findOne({ name })
     || await User.create({ name });
-    const token = jwt.sign(
-      {
-        id: user.id,
-        name: user.name,
-      },
-      'some_secret_key',
-      {
-        expiresIn: '1h', // token will expire after 1 hour
-      },
-    );
+  const token = jwt.sign(
+    {
+      id: user.id,
+      name: user.name,
+    },
+    'some_secret_key',
+    {
+      expiresIn: '1h', // token will expire after 1 hour
+    },
+  );
+  const message = addUserConnectedLog(user);
 
-    pubsub.publish(USER_CONNECTED, user);
-    res.cookie('jwt', token, { maxAge: 1000 * 60 * 60, httpOnly: true });
-    return { user };
+  pubsub.publish(USER_CONNECTED, { userConnected: { message, user } });
+  res.cookie('jwt', token, { maxAge: 1000 * 60 * 60, httpOnly: true });
+  return { message, user };
 };
 
 export const getCurrentUser = (
@@ -54,16 +56,6 @@ export default {
 
   Subscription: {
     userConnected: {
-      resolve: async (user: UserInterface) => {
-        const message = await Message.create({
-          authorId: user.id,
-          event: USER_CONNECTED,
-          system: true,
-        });
-        console.info('resolve');
-
-        return { message, user };
-      },
       subscribe: () => pubsub.asyncIterator([USER_CONNECTED]),
     },
   },

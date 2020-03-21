@@ -1,10 +1,15 @@
 export default `
+  type ConnectResponse {
+    user: User
+  }
+
   type User {
     id: ID!
     name: String!
   }
 
-  type ConnectResponse {
+  type UserConnectedResponse {
+    message: Message
     user: User
   }
 
@@ -14,5 +19,9 @@ export default `
 
   extend type Mutation {
     connect(name: String!): ConnectResponse
+  }
+
+  extend type Subscription {
+    userConnected: UserConnectedResponse
   }
 `;

@@ -4,6 +4,10 @@ export default `
     USER_DISCONNECTED
   }
 
+  type AddMessageResponse {
+    message: Message
+  }
+
   type Message {
     author: User
     body: String
@@ -17,21 +21,11 @@ export default `
     messages: [Message]
   }
 
-  type AddMessageResponse {
-    message: Message
-  }
-
   extend type Mutation {
     addMessage(body: String!): AddMessageResponse
   }
 
-  type UserConnectedResponse {
-    message: Message
-    user: User
-  }
-
   extend type Subscription {
     messageAdded: AddMessageResponse
-    userConnected: UserConnectedResponse
   }
 `;

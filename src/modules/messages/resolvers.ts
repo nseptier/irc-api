@@ -24,6 +24,14 @@ export const addMessage = async (
   return { message };
 };
 
+export const addUserConnectedLog = async (user: UserInterface) => {
+  return await Message.create({
+    authorId: user.id,
+    event: USER_CONNECTED,
+    system: true,
+  });
+};
+
 export const getMessages = async (
   root: any,
   args: any,
@@ -53,3 +61,4 @@ export default {
     },
   },
 };
+
