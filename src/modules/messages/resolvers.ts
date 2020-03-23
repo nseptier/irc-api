@@ -32,11 +32,7 @@ export const addUserConnectedLog = async (user: UserInterface) => {
   });
 };
 
-export const getMessages = async (
-  root: any,
-  args: any,
-  { currentUser }: { currentUser: UserInterface },
-) => {
+export const getMessages = async () => {
   const messages = await Message.find({});
 
   return messages;

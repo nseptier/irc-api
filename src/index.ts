@@ -23,7 +23,8 @@ const server = new ApolloServer({
   context: ({ connection, req, res }) => {
     if (connection) return connection.context;
 
-    const token = req.cookies.jwt;
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.split(' ')[1];
     const currentUser = getUser(token);
 
     return { currentUser, req, res };

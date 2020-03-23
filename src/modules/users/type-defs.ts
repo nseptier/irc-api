@@ -1,5 +1,6 @@
 export default `
   type ConnectResponse {
+    token: String
     user: User
   }
 
