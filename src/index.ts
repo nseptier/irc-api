@@ -1,22 +1,24 @@
-import { createServer } from 'http';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http';
+
 import resolvers from 'modules/resolvers';
 import typeDefs from 'modules/type-defs';
-import { ApolloServer } from 'apollo-server-express';
-import cookieParser from 'cookie-parser';
-import express from 'express';
-import cors from 'cors';
+import { UserInterface } from 'modules/users/model';
+import { getUser } from 'modules/users/resolvers';
 
 const PORT = 4000;
 
-const getUser = (token: string) => {
-  if (!token) return null;
-  try {
-    return jwt.verify(token, 'some_secret_key');
-  } catch (err) {
-    return null;
-  }
+const getCurrentUser = async (token: string) => {
+    if (!token) return null;
+
+    const decoded = jwt.verify(token, 'some_secret_key');
+
+    return await getUser((decoded as any).id);
 };
 
 const server = new ApolloServer({
@@ -25,7 +27,7 @@ const server = new ApolloServer({
 
     const authHeader = req.headers.authorization || '';
     const token = authHeader.split(' ')[1];
-    const currentUser = getUser(token);
+    const currentUser = getCurrentUser(token);
 
     return { currentUser, req, res };
   },

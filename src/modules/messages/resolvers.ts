@@ -8,7 +8,7 @@ const pubsub = new PubSub();
 export const MESSAGE_ADDED = 'MESSAGE_ADDED';
 
 export const getAuthor = async (message: any) => (
-  await getUser(null, { id: message.authorId })
+  await getUser(message.authorId)
 );
 
 export const addMessage = async (
