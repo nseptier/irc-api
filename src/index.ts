@@ -22,12 +22,12 @@ const getCurrentUser = async (token: string) => {
 };
 
 const server = new ApolloServer({
-  context: ({ connection, req, res }) => {
+  context: async ({ connection, req, res }) => {
     if (connection) return connection.context;
 
     const authHeader = req.headers.authorization || '';
     const token = authHeader.split(' ')[1];
-    const currentUser = getCurrentUser(token);
+    const currentUser = await getCurrentUser(token);
 
     return { currentUser, req, res };
   },
