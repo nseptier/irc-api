@@ -10,20 +10,11 @@ export default `
     user: User
   }
 
-  type UserConnectedResponse {
-    message: Message
-    user: User
-  }
-
   extend type Query {
-    refreshAccessToken: AuthResponse!
+    accessToken: AuthResponse!
   }
 
   extend type Mutation {
     connect(name: String!): ConnectResponse
-  }
-
-  extend type Subscription {
-    userConnected: UserConnectedResponse
   }
 `;

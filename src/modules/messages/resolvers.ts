@@ -1,8 +1,10 @@
+import { PubSub } from 'apollo-server-express';
+
 import Message, { MessageInterface } from './model';
 import User, { UserInterface } from 'modules/users/model';
-import { USER_CONNECTED } from 'modules/auth/resolvers';
 import { getUser } from 'modules/users/resolvers';
-import { PubSub } from 'apollo-server-express';
+import { ResolverArgs } from 'modules/resolvers';
+import { USER_CONNECTED } from 'modules/auth/resolvers';
 
 const pubsub = new PubSub();
 
@@ -13,9 +15,8 @@ export const getAuthor = async (message: any) => (
 );
 
 export const addMessage = async (
-  root: any,
-  { body }: MessageInterface,
-  { currentUser }: { currentUser: UserInterface },
+  body: MessageInterface,
+  currentUser?: UserInterface,
 ) => {
   if (!currentUser) throw new Error('Not authenticated');
 
@@ -41,15 +42,17 @@ export const getMessages = async () => {
 
 export default {
   Message: {
-    author: getAuthor,
+    author: (message: MessageInterface) => getAuthor(message),
   },
 
   Query: {
-    messages: getMessages,
+    messages: () => getMessages(),
   },
 
   Mutation: {
-    addMessage,
+    addMessage: (...[root, { body }, { currentUser }]: ResolverArgs) => (
+      addMessage(body, currentUser)
+    ),
   },
 
   Subscription: {
