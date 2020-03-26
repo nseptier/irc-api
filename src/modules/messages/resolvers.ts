@@ -1,6 +1,7 @@
 import Message, { MessageInterface } from './model';
 import User, { UserInterface } from 'modules/users/model';
-import { getUser, USER_CONNECTED } from 'modules/users/resolvers';
+import { USER_CONNECTED } from 'modules/auth/resolvers';
+import { getUser } from 'modules/users/resolvers';
 import { PubSub } from 'apollo-server-express';
 
 const pubsub = new PubSub();

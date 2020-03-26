@@ -1,6 +1,26 @@
 import jwt from 'jsonwebtoken';
+import { PubSub } from 'apollo-server-express';
 
-import { UserInterface } from 'modules/users/model';
+import User, { UserInterface } from 'modules/users/model';
+import { addUserConnectedLog } from 'modules/messages/resolvers';
+import { findOrCreateUser } from 'modules/users/resolvers';
+import { ResolverArgs } from 'modules/resolvers';
+
+const pubsub = new PubSub();
+
+export const USER_CONNECTED = 'USER_CONNECTED';
+
+export const connect = async (name: string, res: any) => {
+  const user = await findOrCreateUser({ name });
+  const message = addUserConnectedLog(user);
+
+  pubsub.publish(USER_CONNECTED, { userConnected: { message, user } });
+
+  return {
+    ...createTokens(user, res),
+    user,
+  };
+};
 
 export const createTokens = (user: UserInterface, res: any) => {
   const token = jwt.sign(
@@ -34,11 +54,7 @@ export const createTokens = (user: UserInterface, res: any) => {
 
 export default {
   Query: {
-    refreshAccessToken: (
-      root: any,
-      args: any,
-      { req, res }: { req: any, res: any },
-    ) => {
+    refreshAccessToken: (...[root, args, { req, res }]: ResolverArgs) => {
       try {
         const decoded = jwt.verify(req.cookies.refreshToken, 'some_secret_key');
 
@@ -46,6 +62,18 @@ export default {
       } catch (e) {
         throw new Error('Not authenticated');
       }
+    },
+  },
+
+  Mutation: {
+    connect: (...[root, { name }, { req, res }]: ResolverArgs) => (
+      connect(name, res)
+    ),
+  },
+
+  Subscription: {
+    userConnected: {
+      subscribe: () => pubsub.asyncIterator([USER_CONNECTED]),
     },
   },
 };
